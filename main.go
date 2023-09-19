@@ -238,6 +238,7 @@ func handleAdList(w http.ResponseWriter, r *http.Request) {
 	}
 	bytes := vastXml(files)
 	w.Header().Add("Content-Length", strconv.Itoa(len(bytes)))
+	w.Header().Add("Content-Type", "application/xml")
 	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
 }
