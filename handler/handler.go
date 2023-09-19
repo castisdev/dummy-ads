@@ -44,6 +44,9 @@ func NewAdListHandler(cfg *Config) *AdListHandler {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if len(files) == 0 {
+		log.Fatalf("not exists mp4 file in %s", cfg.Dir)
+	}
 	return &AdListHandler{cfg, files}
 }
 
