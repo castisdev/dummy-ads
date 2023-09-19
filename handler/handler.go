@@ -53,16 +53,12 @@ func NewAdListHandler(cfg *Config) *AdListHandler {
 func (ah *AdListHandler) selectFiles(du time.Duration) []*AdFile {
 	selector := FileSelector{cfg: ah.cfg}
 	s := selector.Select(ah.adFiles, du.Milliseconds())
-	if s != nil {
-		str := ""
-		for _, f := range s.set {
-			str += f.String()
-		}
-		log.Printf("select du[%s]: %s", du, str)
-		return s.set
+	str := ""
+	for _, f := range s {
+		str += f.String()
 	}
-	log.Printf("select du[%s]: not exists", du)
-	return []*AdFile{}
+	log.Printf("select du[%s]: %s", du, str)
+	return s
 }
 
 func (ah *AdListHandler) URL(elem ...string) string {

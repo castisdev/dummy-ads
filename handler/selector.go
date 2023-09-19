@@ -35,11 +35,11 @@ func (sg *FileSelector) subsets(set []*AdFile, sum int64) []*AdFileSet {
 	return sg.fileSets
 }
 
-func (sg *FileSelector) Select(set []*AdFile, sum int64) *AdFileSet {
+func (sg *FileSelector) Select(set []*AdFile, sum int64) []*AdFile {
 	sg.fileSets = []*AdFileSet{}
 	subsets := sg.subsets(set, sum)
 	if len(subsets) == 0 {
-		return nil
+		return []*AdFile{}
 	}
 	best := subsets[0]
 	for _, s := range subsets {
@@ -47,5 +47,5 @@ func (sg *FileSelector) Select(set []*AdFile, sum int64) *AdFileSet {
 			best = s
 		}
 	}
-	return best
+	return best.set
 }
