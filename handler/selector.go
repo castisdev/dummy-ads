@@ -1,6 +1,9 @@
 package handler
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 type AdFileSet struct {
 	set  []*AdFile
@@ -55,5 +58,10 @@ func (sg *FileSelector) Select(set []*AdFile, sum int64) []*AdFile {
 	if len(sets) == 0 {
 		return []*AdFile{}
 	}
-	return sets[rand.Intn(len(sets))].set
+	rand.Seed(time.Now().UnixNano())
+	arr := sets[rand.Intn(len(sets))].set
+	rand.Shuffle(len(arr), func(i, j int) {
+		arr[i], arr[j] = arr[j], arr[i]
+	})
+	return arr
 }
