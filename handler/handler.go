@@ -33,6 +33,10 @@ func (a *AdFile) String() string {
 	return fmt.Sprintf("{%s %s %d %d %s}", a.id, a.filename, a.width, a.height, a.duration)
 }
 
+func (a *AdFile) Clone() *AdFile {
+	return &AdFile{a.id, a.filename, a.width, a.height, a.duration}
+}
+
 type AdListHandler struct {
 	cfg     *Config
 	adFiles []*AdFile
