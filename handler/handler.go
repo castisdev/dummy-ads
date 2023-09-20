@@ -83,7 +83,6 @@ func (ah *AdListHandler) vastXml(files []*AdFile) []byte {
 				Errors:   []vast.CDATAString{{CDATA: ah.URL("error")}},
 				Impressions: []vast.Impression{
 					{ID: "11111", URI: ah.URL("impression", "1111")},
-					{ID: "11112", URI: ah.URL("impression", "1112")},
 				},
 				Creatives: []vast.Creative{
 					{
