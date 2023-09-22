@@ -82,7 +82,7 @@ func (ah *AdListHandler) vastXml(files []*AdFile) []byte {
 				AdTitle:  vast.CDATAString{CDATA: "adTitle"},
 				Errors:   []vast.CDATAString{{CDATA: ah.URL("error")}},
 				Impressions: []vast.Impression{
-					{ID: "11111", URI: ah.URL("impression", "1111")},
+					{ID: "11111", URI: ah.URL("impression", file.filename)},
 				},
 				Creatives: []vast.Creative{
 					{
@@ -91,12 +91,12 @@ func (ah *AdListHandler) vastXml(files []*AdFile) []byte {
 						Linear: &vast.Linear{
 							Duration: vast.Duration(file.duration),
 							TrackingEvents: []vast.Tracking{
-								{Event: vast.Event_type_creativeView, URI: ah.URL("tracking", "createview")},
-								{Event: vast.Event_type_start, URI: ah.URL("tracking", "start")},
-								{Event: vast.Event_type_firstQuartile, URI: ah.URL("tracking", "firstquartile")},
-								{Event: vast.Event_type_midpoint, URI: ah.URL("tracking", "midpoint")},
-								{Event: vast.Event_type_thirdQuartile, URI: ah.URL("tracking", "thirdquartile")},
-								{Event: vast.Event_type_complete, URI: ah.URL("tracking", "complete")},
+								{Event: vast.Event_type_creativeView, URI: ah.URL("tracking", "createview", file.filename)},
+								{Event: vast.Event_type_start, URI: ah.URL("tracking", "start", file.filename)},
+								{Event: vast.Event_type_firstQuartile, URI: ah.URL("tracking", "firstquartile", file.filename)},
+								{Event: vast.Event_type_midpoint, URI: ah.URL("tracking", "midpoint", file.filename)},
+								{Event: vast.Event_type_thirdQuartile, URI: ah.URL("tracking", "thirdquartile", file.filename)},
+								{Event: vast.Event_type_complete, URI: ah.URL("tracking", "complete", file.filename)},
 							},
 							MediaFiles: []vast.MediaFile{
 								{
@@ -128,6 +128,7 @@ func (ah *AdListHandler) vastXml(files []*AdFile) []byte {
 }
 
 func (ah *AdListHandler) HandleAdList(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%s %s, Host:[%s], %v", r.Method, r.RequestURI, r.Host, r.Header)
 	qp := r.URL.Query().Get("pod_max_dur")
 	du, err := strconv.Atoi(r.URL.Query().Get("pod_max_dur"))
 	if err != nil {

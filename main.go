@@ -2,14 +2,17 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/castisdev/dummy-ads/handler"
 	"github.com/gorilla/mux"
 )
 
 func handleOK(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%s %s, Host:[%s], %v", r.Method, r.RequestURI, r.Host, r.Header)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -21,16 +24,27 @@ func main() {
 	flag.StringVar(&cfg.CertFile, "https-cert", "", "certificate file for https")
 	flag.StringVar(&cfg.KeyFile, "https-key", "", "private key file for https")
 	flag.BoolVar(&cfg.IgnoreMillisec, "ignore-ms", false, "ignore milliseconds in calculating AD list")
+	version := flag.Bool("version", false, "print version")
 	flag.Parse()
+
+	if *version {
+		fmt.Println("dummy-ads version 1.0.0")
+		os.Exit(0)
+	}
 
 	ah := handler.NewAdListHandler(cfg)
 	router := mux.NewRouter()
 	router.HandleFunc("/adlist", ah.HandleAdList).Methods("GET")
 	router.HandleFunc("/error", handleOK)
-	router.HandleFunc("/impression/{id}", handleOK)
-	router.HandleFunc("/tracking/{event}", handleOK)
+	router.PathPrefix("/impression/").Handler(http.HandlerFunc(handleOK))
+	router.PathPrefix("/tracking/").Handler(http.HandlerFunc(handleOK))
 	router.HandleFunc("/clickthrough", handleOK)
-	router.PathPrefix("/files/").Handler(http.StripPrefix("/files/", http.FileServer(http.Dir(cfg.Dir))))
+	fsrv := http.FileServer(http.Dir(cfg.Dir))
+	router.PathPrefix("/files/").Handler(http.StripPrefix("/files/", http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			log.Printf("%s %s, Host:[%s], %v", r.Method, r.RequestURI, r.Host, r.Header)
+			fsrv.ServeHTTP(w, r)
+		})))
 	srv := &http.Server{
 		Addr:    cfg.Addr,
 		Handler: router,
