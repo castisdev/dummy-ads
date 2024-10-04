@@ -1,6 +1,7 @@
 module github.com/castisdev/dummy-ads
 
-go 1.19
+go 1.23
+toolchain go1.23.1
 
 require (
 	github.com/abema/go-mp4 v0.13.0

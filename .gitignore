@@ -1,3 +1,4 @@
 .vscode/
 dummy-ads
 *.tar.gz
+__debug_bin*

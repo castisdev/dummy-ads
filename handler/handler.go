@@ -19,6 +19,7 @@ type Config struct {
 	CertFile       string
 	KeyFile        string
 	IgnoreMillisec bool
+	UseRedirect    bool
 }
 
 type AdFile struct {
@@ -66,7 +67,18 @@ func (ah *AdListHandler) selectFiles(du time.Duration) []*AdFile {
 }
 
 func (ah *AdListHandler) URL(elem ...string) string {
-	s, _ := url.JoinPath(ah.cfg.UrlPrefix, elem...)
+	s := ah.cfg.UrlPrefix
+	if ah.cfg.UseRedirect {
+		s, _ = url.JoinPath(s, "redirect")
+	}
+	s, _ = url.JoinPath(s, elem...)
+	s += "?ADPLAYHEAD=[ADPLAYHEAD]"
+	s += "&ADCOUNT=[ADCOUNT]"
+	s += "&SERVERSIDE=[SERVERSIDE]"
+	s += "&SERVERUA=[SERVERUA]"
+	s += "&TIMESTAMP=[TIMESTAMP]"
+	s += "&CACHEBUSTING=[CACHEBUSTING]"
+	s += "&APPBUNDLE=[APPBUNDLE]"
 	return s
 }
 
