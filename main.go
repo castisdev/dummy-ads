@@ -38,7 +38,7 @@ func main() {
 	flag.Parse()
 
 	if *version {
-		fmt.Println("dummy-ads version 1.0.1")
+		fmt.Println("dummy-ads version 1.0.2")
 		os.Exit(0)
 	}
 

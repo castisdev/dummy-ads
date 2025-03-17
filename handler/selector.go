@@ -2,7 +2,6 @@ package handler
 
 import (
 	"math/rand"
-	"time"
 )
 
 type AdFileSet struct {
@@ -53,12 +52,21 @@ func (sg *FileSelector) getMinDiffSets(set []*AdFile, sum int64) []*AdFileSet {
 }
 
 func (sg *FileSelector) Select(set []*AdFile, sum int64) []*AdFile {
+	if sum == 0 {
+		var arr []*AdFile
+		cnt := rand.Intn(3) + 1
+		for i := 0; i < cnt; i++ {
+			idx := rand.Intn(len(set))
+			arr = append(arr, set[idx])
+		}
+		return arr
+	}
+
 	sg.minDiffSets = []*AdFileSet{}
 	sets := sg.getMinDiffSets(set, sum)
 	if len(sets) == 0 {
 		return []*AdFile{}
 	}
-	rand.Seed(time.Now().UnixNano())
 	arr := sets[rand.Intn(len(sets))].set
 	rand.Shuffle(len(arr), func(i, j int) {
 		arr[i], arr[j] = arr[j], arr[i]
