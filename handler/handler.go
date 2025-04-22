@@ -85,7 +85,11 @@ func (ah *AdListHandler) URL(elem ...string) string {
 func (ah *AdListHandler) vastXml(files []*AdFile) []byte {
 	var ads []vast.Ad
 	for _, file := range files {
-		fileUrl, _ := url.JoinPath(ah.cfg.UrlPrefix, "files", file.filename)
+		fileUrl := ah.cfg.UrlPrefix
+		if ah.cfg.UseRedirect {
+			fileUrl, _ = url.JoinPath(fileUrl, "redirect")
+		}
+		fileUrl, _ = url.JoinPath(fileUrl, "files", file.filename)
 
 		ads = append(ads, vast.Ad{
 			ID: file.id,
@@ -141,10 +145,13 @@ func (ah *AdListHandler) vastXml(files []*AdFile) []byte {
 
 func (ah *AdListHandler) HandleAdList(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s %s, Host:[%s], %v", r.Method, r.RequestURI, r.Host, r.Header)
-	qp := r.URL.Query().Get("pod_max_dur")
-	du, err := strconv.Atoi(r.URL.Query().Get("pod_max_dur"))
-	if err != nil {
-		log.Printf("invalid pod_max_dur, %s", qp)
+	var du int
+	if qp := r.URL.Query().Get("pod_max_dur"); qp != "" {
+		var err error
+		du, err = strconv.Atoi(r.URL.Query().Get("pod_max_dur"))
+		if err != nil {
+			log.Printf("invalid pod_max_dur, %s", qp)
+		}
 	}
 	files := ah.selectFiles(time.Duration(du) * time.Second)
 	if len(files) == 0 {
